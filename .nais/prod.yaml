@@ -20,6 +20,8 @@ spec:
     port: 8080
     initialDelay: 20
     timeout: 60
+  ingresses:
+    - https://medlemskap-popp.intern.nav.no
   resources:
     limits:
       cpu: "200m"
@@ -41,8 +43,6 @@ spec:
   accessPolicy:
     inbound:
       rules:
-        - application: hm-medlemskap
-          namespace: teamdigihot
     outbound:
       rules:
       external:

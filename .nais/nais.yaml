@@ -36,8 +36,6 @@ spec:
   accessPolicy:
     inbound:
       rules:
-        - application:
-          namespace:
     outbound:
       rules:
       external:
