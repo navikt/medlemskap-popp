@@ -34,8 +34,6 @@ spec:
   kafka:
     pool: nav-dev
   accessPolicy:
-    inbound:
-      rules:
     outbound:
       rules:
       external:
