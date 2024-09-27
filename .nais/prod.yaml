@@ -41,6 +41,11 @@ spec:
   kafka:
     pool: nav-prod
   accessPolicy:
+    inbound:
+      rules:
+        - application: omsorgsopptjening-bestem-pensjonsopptjening
+          namespace: pensjonopptjening
+          cluster: prod-gcp
     outbound:
       rules:
       external:

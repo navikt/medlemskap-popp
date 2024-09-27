@@ -25,7 +25,7 @@ private val defaultProperties = ConfigurationMap(
         "NAIS_APP_NAME" to "",
         "NAIS_CLUSTER_NAME" to "dev-gcp",
         "NAIS_APP_IMAGE" to "",
-        "AZURE_APP_CLIENT_ID" to "1305007d-29b8-441d-b87c-3139be10c1dc",
+        "AZURE_APP_CLIENT_ID" to "59178260-1d39-4e4f-8c0b-ccf8b6e9b1af",
         "AZURE_APP_TENANT_ID" to "966ac572-f5b7-4bbe-aa88-c76419c0f851",
     )
 )
