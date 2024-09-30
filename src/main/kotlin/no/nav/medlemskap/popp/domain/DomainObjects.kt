@@ -39,7 +39,3 @@ data class TrygdePeriode(
     val omsorgsmottaker: String,
     val landstilknytning: String,
 )
-
-data class Medlemskap(
-    val fnr: String
-)
