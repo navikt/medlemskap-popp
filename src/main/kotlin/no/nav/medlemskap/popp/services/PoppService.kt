@@ -9,13 +9,13 @@ import java.util.*
 import kotlin.random.Random
 
 class PoppService:IJegKanHåndterePoppRequest {
-    override fun handleRequest(PoppRequest: PoppRequest):PoppRespons {
+    override fun handleRequest(poppRequest: PoppRequest):PoppRespons {
 
 
         if (Random.nextBoolean()){
             return PoppRespons(
-                fnr = "01987654321",
-                referanse = UUID.randomUUID().toString(),
+                fnr = poppRequest.omsorgsyter,
+                referanse = poppRequest.referanse,
                 medlemperioder = listOf(
                     Medlemperioder(
                         fom = LocalDate.parse("2019-09-01"),
@@ -38,8 +38,8 @@ class PoppService:IJegKanHåndterePoppRequest {
             )
         }
         return PoppRespons(
-            fnr = "01987654321",
-            referanse = UUID.randomUUID().toString(),
+            fnr = poppRequest.omsorgsyter,
+            referanse = poppRequest.referanse,
             medlemperioder = listOf(
                 Medlemperioder(
                     fom = LocalDate.parse("2019-09-01"),

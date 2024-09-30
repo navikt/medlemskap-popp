@@ -8,6 +8,7 @@ import io.ktor.server.plugins.callid.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.coroutines.cancel
 import mu.KotlinLogging
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.medlemskap.popp.domain.PoppRequest
@@ -29,8 +30,11 @@ fun Routing.PoppRoutes(PoppService: PoppService) {
                 StructuredArguments.kv("endpoint", "vurdering")
             )
             val request = call.receive<PoppRequest>()
+            if (request.perioder.isEmpty()){
+                call.respond(HttpStatusCode.BadRequest,"ingen perioder i request")
+                return@post
+            }
             try {
-
                 val respons = PoppService.handleRequest(request)
                 call.respond(HttpStatusCode.OK,respons)
             } catch (t: Throwable) {
