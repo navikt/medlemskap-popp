@@ -40,10 +40,6 @@ class PoppService:IJegKanHåndterePoppRequest {
         val respons = kallMedlemskapOppslag(request= medlemskapsRequest, callId = poppRequest.referanse)
         val poppRespons: PoppRespons = mapRegelmotorResponsTilPoppRespons(respons, referanse = poppRequest.referanse)
         return poppRespons
-
-        //Tolke svar fra regelmotor
-
-        //Returnere PoppRespons
     }
 
     suspend fun kallMedlemskapOppslag(request: MedlOppslagRequest, callId: String): String {
