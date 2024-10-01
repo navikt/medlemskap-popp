@@ -18,5 +18,6 @@ gradle-app.setting
 *.iws
 *.iml
 *.ipr
+*.lock
 
 secrets

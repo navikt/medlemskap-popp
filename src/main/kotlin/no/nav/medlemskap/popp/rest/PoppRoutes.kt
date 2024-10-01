@@ -13,6 +13,7 @@ import mu.KotlinLogging
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.medlemskap.popp.domain.PoppRequest
 import no.nav.medlemskap.popp.services.PoppService
+import no.nav.medlemskap.popp.services.erPerioderSammenhengende
 
 import java.util.*
 private val logger = KotlinLogging.logger { }
@@ -32,6 +33,10 @@ fun Routing.PoppRoutes(PoppService: PoppService) {
             val request = call.receive<PoppRequest>()
             if (request.perioder.isEmpty()){
                 call.respond(HttpStatusCode.BadRequest,"ingen perioder i request")
+                return@post
+            }
+            if (!request.erPerioderSammenhengende()){
+                call.respond(HttpStatusCode.NotImplemented,"tjenesten støtter ikke vurderinger med hull i periodene")
                 return@post
             }
             try {

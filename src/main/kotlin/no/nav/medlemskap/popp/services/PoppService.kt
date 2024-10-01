@@ -13,18 +13,16 @@ import no.nav.medlemskap.popp.domain.PoppRequest
 import no.nav.medlemskap.popp.domain.PoppRespons
 import no.nav.medlemskap.popp.domain.Status
 import no.nav.medlemskap.popp.http.cioHttpClient
-import no.nav.medlemskap.popp.http.httpClient
 import no.nav.medlemskap.popp.jackson.JacksonParser
 import java.time.LocalDate
 import java.time.YearMonth
-import java.util.*
-import kotlin.random.Random
 
-class PoppService:IJegKanHåndterePoppRequest {
+class PoppService : IJegKanHåndterePoppRequest {
     var lovmeClient: LovemeAPI
     var configuration = Configuration()
     val azuraADClient = AzureAdClient(configuration)
     val httpClient = cioHttpClient
+
     init {
 
         lovmeClient = MedlemskapOppslagClient(
@@ -33,12 +31,13 @@ class PoppService:IJegKanHåndterePoppRequest {
             httpClient = httpClient
         )
     }
-    override suspend fun handleRequest(poppRequest: PoppRequest):PoppRespons {
+
+    override suspend fun handleRequest(poppRequest: PoppRequest): PoppRespons {
         //Lag requestObjekt
         val medlemskapsRequest: MedlOppslagRequest = mapMedlemskapRequestFromPoppRequest(poppRequest)
         //Kall regelmotor
 
-        val respons = kallMedlemskapOppslag(request= medlemskapsRequest, callId = poppRequest.referanse)
+        val respons = kallMedlemskapOppslag(request = medlemskapsRequest, callId = poppRequest.referanse)
         val poppRespons: PoppRespons = mapRegelmotorResponsTilPoppRespons(respons, referanse = poppRequest.referanse)
         return poppRespons
     }
@@ -67,7 +66,12 @@ fun mapMedlemskapRequestFromPoppRequest(poppRequest: PoppRequest): MedlOppslagRe
     val førsteDagForYtelse: LocalDate = LocalDate.of(yearMonthFom.year, yearMonthFom.month, 1)
     val sisteDagForYtelse: LocalDate = LocalDate.of(yearMonthTom.year, yearMonthTom.month, 1)
 
-    return MedlOppslagRequest(fnr = fnr, førsteDagForYtelse = førsteDagForYtelse.toString(), periode = Periode(førsteDagForYtelse.toString(), sisteDagForYtelse.toString()), brukerinput = Brukerinput(false))
+    return MedlOppslagRequest(
+        fnr = fnr,
+        førsteDagForYtelse = førsteDagForYtelse.toString(),
+        periode = Periode(førsteDagForYtelse.toString(), sisteDagForYtelse.toString()),
+        brukerinput = Brukerinput(false)
+    )
 
 
 }
@@ -78,18 +82,47 @@ fun mapRegelmotorResponsTilPoppRespons(regelmotorRespons: String, referanse: Str
     val fom = regelmotorRespons.datagrunnlag.førsteDagForYtelse.minusYears(1)
     val tom = regelmotorRespons.datagrunnlag.førsteDagForYtelse
     //TODO denne businesslogikken må bekreftes
-    when(svar) {
-        "JA" -> return PoppRespons(regelmotorRespons.datagrunnlag.fnr, referanse = referanse, medlemperioder = listOf(Medlemperioder(fom, tom, Status.JA)), status = Status.JA)
+    when (svar) {
+        "JA" -> return PoppRespons(
+            regelmotorRespons.datagrunnlag.fnr,
+            referanse = referanse,
+            medlemperioder = listOf(Medlemperioder(fom, tom, Status.JA)),
+            status = Status.JA
+        )
 
     }
-    return PoppRespons(regelmotorRespons.datagrunnlag.fnr, referanse = referanse, medlemperioder = emptyList(), status = Status.UAVKLART)
+    return PoppRespons(
+        regelmotorRespons.datagrunnlag.fnr,
+        referanse = referanse,
+        medlemperioder = emptyList(),
+        status = Status.UAVKLART
+    )
 }
 
 fun erDatoerSammenhengende(sluttDato: LocalDate, startDato: LocalDate?, tillatDagersHullIPeriode: Long): Boolean =
     sluttDato.isAfter(startDato?.minusDays(tillatDagersHullIPeriode))
 
-fun PoppRequest.validerPerioder(): Boolean{
-    var forrigeTilDato: LocalDate = 0
-    val sortertePerioder = this.perioder.sortedBy { it.fraOgMed }.first().fraOgMed
-    return sortertePerioder
+fun PoppRequest.erPerioderSammenhengende(): Boolean {
+    //finn alle unike fnr for barn som får trygd
+    val unikefnr = this.perioder.map { it.omsorgsmottaker }.distinct()
+    //itterer gjenno barna
+    unikefnr.forEach { fnr ->
+        //sorter alle innslag for hver det aktuelle barnet
+        val sortertListe = this.perioder.sortedBy { it.fraOgMed }.filter { it.omsorgsmottaker == fnr }
+        var forrigeTilOgMedDato: YearMonth? = null
+        sortertListe.forEach {
+            //dersom forrige periode er null, så skipp denne iterasjonen
+            if (forrigeTilOgMedDato != null) {
+                if (forrigeTilOgMedDato != (it.fraOgMed.minusMonths(1))) {
+                    return false
+                }
+
+            }
+            forrigeTilOgMedDato = it.tilOgMed
+        }
+
+    }
+    return true
 }
+
+
