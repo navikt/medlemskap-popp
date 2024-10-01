@@ -68,8 +68,8 @@ fun mapMedlemskapRequestFromPoppRequest(poppRequest: PoppRequest): MedlOppslagRe
 
     return MedlOppslagRequest(
         fnr = fnr,
-        førsteDagForYtelse = førsteDagForYtelse.toString(),
-        periode = Periode(førsteDagForYtelse.toString(), sisteDagForYtelse.toString()),
+        førsteDagForYtelse = førsteDagForYtelse.plusYears(1).toString(),
+        periode = Periode(førsteDagForYtelse.plusYears(1).toString()),
         brukerinput = Brukerinput(false)
     )
 
@@ -88,6 +88,12 @@ fun mapRegelmotorResponsTilPoppRespons(regelmotorRespons: String, referanse: Str
             referanse = referanse,
             medlemperioder = listOf(Medlemperioder(fom, tom, Status.JA)),
             status = Status.JA
+        )
+        "UAVKLART" -> return PoppRespons(
+            regelmotorRespons.datagrunnlag.fnr,
+            referanse = referanse,
+            medlemperioder = listOf(Medlemperioder(fom, tom, Status.UAVKLART)),
+            status = Status.UAVKLART
         )
 
     }
