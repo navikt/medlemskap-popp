@@ -16,6 +16,7 @@ import no.nav.medlemskap.popp.http.cioHttpClient
 import no.nav.medlemskap.popp.http.httpClient
 import no.nav.medlemskap.popp.jackson.JacksonParser
 import java.time.LocalDate
+import java.time.YearMonth
 import java.util.*
 import kotlin.random.Random
 
@@ -82,4 +83,13 @@ fun mapRegelmotorResponsTilPoppRespons(regelmotorRespons: String, referanse: Str
 
     }
     return PoppRespons(regelmotorRespons.datagrunnlag.fnr, referanse = referanse, medlemperioder = emptyList(), status = Status.UAVKLART)
+}
+
+fun erDatoerSammenhengende(sluttDato: LocalDate, startDato: LocalDate?, tillatDagersHullIPeriode: Long): Boolean =
+    sluttDato.isAfter(startDato?.minusDays(tillatDagersHullIPeriode))
+
+fun PoppRequest.validerPerioder(): Boolean{
+    var forrigeTilDato: LocalDate = 0
+    val sortertePerioder = this.perioder.sortedBy { it.fraOgMed }.first().fraOgMed
+    return sortertePerioder
 }
