@@ -2,12 +2,13 @@ package no.nav.medlemskap.popp.services
 
 import no.nav.medlemskap.popp.domain.PoppRequest
 import no.nav.medlemskap.popp.domain.TrygdePeriode
+import no.nav.medlemskap.popp.domain.erPerioderSammenhengende
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.time.YearMonth
 
 
-class PoppServiceTest {
+class PoppRequestValidationTest {
 
     @Test
     fun `Tester perioder fra request uten hull`(){

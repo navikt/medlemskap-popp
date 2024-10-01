@@ -8,12 +8,13 @@ import io.ktor.server.plugins.callid.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.coroutines.cancel
+
 import mu.KotlinLogging
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.medlemskap.popp.domain.PoppRequest
+import no.nav.medlemskap.popp.domain.erPerioderSammenhengende
 import no.nav.medlemskap.popp.services.PoppService
-import no.nav.medlemskap.popp.services.erPerioderSammenhengende
+
 
 import java.util.*
 private val logger = KotlinLogging.logger { }
