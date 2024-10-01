@@ -3,6 +3,7 @@ package no.nav.medlemskap.popp.services
 import no.nav.medlemskap.hjelpemidler.clients.medlemskapoppslag.Brukerinput
 import no.nav.medlemskap.hjelpemidler.clients.medlemskapoppslag.MedlOppslagRequest
 import no.nav.medlemskap.hjelpemidler.clients.medlemskapoppslag.Periode
+import no.nav.medlemskap.hjelpemidler.domain.GradertAdresseException
 import no.nav.medlemskap.popp.clients.AzureAdClient
 import no.nav.medlemskap.popp.clients.LovemeAPI
 import no.nav.medlemskap.popp.clients.MedlemskapOppslagClient
@@ -35,13 +36,28 @@ class PoppService:IJegKanHåndterePoppRequest {
         //Lag requestObjekt
         val medlemskapsRequest: MedlOppslagRequest = mapMedlemskapRequestFromPoppRequest(poppRequest)
         //Kall regelmotor
-        val respons = lovmeClient.vurderMedlemskap(medlemskapsRequest, callId = UUID.randomUUID().toString())
+
+        val respons = kallMedlemskapOppslag(request= medlemskapsRequest, callId = poppRequest.referanse)
         val poppRespons: PoppRespons = mapRegelmotorResponsTilPoppRespons(respons, referanse = poppRequest.referanse)
         return poppRespons
 
         //Tolke svar fra regelmotor
 
         //Returnere PoppRespons
+    }
+
+    suspend fun kallMedlemskapOppslag(request: MedlOppslagRequest, callId: String): String {
+        runCatching { lovmeClient.vurderMedlemskap(request, callId) }
+            .onFailure {
+                if (it.message?.contains("GradertAdresseException") == true) {
+                    throw GradertAdresseException("Medlemskapsvurdering kan ikke utføres på personer med kode 6/7")
+                } else {
+                    throw Exception("Teknisk feil ved kall mot Lovme. Årsak : ${it.message}")
+                }
+            }
+            .onSuccess { return it }
+        return "" //umulig å komme hit?
+
     }
 
 
