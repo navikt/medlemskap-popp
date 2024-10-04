@@ -8,10 +8,13 @@ import io.ktor.server.plugins.callid.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+
 import mu.KotlinLogging
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.medlemskap.popp.domain.PoppRequest
+import no.nav.medlemskap.popp.domain.erPerioderSammenhengende
 import no.nav.medlemskap.popp.services.PoppService
+
 
 import java.util.*
 private val logger = KotlinLogging.logger { }
@@ -29,8 +32,15 @@ fun Routing.PoppRoutes(PoppService: PoppService) {
                 StructuredArguments.kv("endpoint", "vurdering")
             )
             val request = call.receive<PoppRequest>()
+            if (request.perioder.isEmpty()){
+                call.respond(HttpStatusCode.BadRequest,"ingen perioder i request")
+                return@post
+            }
+            if (!request.erPerioderSammenhengende()){
+                call.respond(HttpStatusCode.NotImplemented,"tjenesten støtter ikke vurderinger med hull i periodene")
+                return@post
+            }
             try {
-
                 val respons = PoppService.handleRequest(request)
                 call.respond(HttpStatusCode.OK,respons)
             } catch (t: Throwable) {

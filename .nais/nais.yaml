@@ -41,6 +41,7 @@ spec:
           cluster: dev-gcp
     outbound:
       rules:
+        - application: medlemskap-oppslag
       external:
         - host: login.microsoftonline.com
   resources:
@@ -51,3 +52,7 @@ spec:
       cpu: "200m"
       memory: "256Mi"
   env:
+    - name: MEDL_OPPSLAG_BASE_URL
+      value: http://medlemskap-oppslag.medlemskap.svc.cluster.local
+    - name: MEDL_OPPSLAG_CLIENT_ID
+      value: 2719da58-489e-4185-9ee6-74b7e93763d2

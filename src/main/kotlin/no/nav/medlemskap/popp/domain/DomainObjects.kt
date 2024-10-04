@@ -40,6 +40,25 @@ data class TrygdePeriode(
     val landstilknytning: String,
 )
 
-data class Medlemskap(
-    val fnr: String
-)
+fun PoppRequest.erPerioderSammenhengende(): Boolean {
+    //finn alle unike fnr for barn som får trygd
+    val unikefnr = this.perioder.map { it.omsorgsmottaker }.distinct()
+    //itterer gjenno barna
+    unikefnr.forEach { fnr ->
+        //sorter alle innslag for hver det aktuelle barnet
+        val sortertListe = this.perioder.sortedBy { it.fraOgMed }.filter { it.omsorgsmottaker == fnr }
+        var forrigeTilOgMedDato: YearMonth? = null
+        sortertListe.forEach {
+            //dersom forrige periode er null, så skipp denne iterasjonen
+            if (forrigeTilOgMedDato != null) {
+                if (forrigeTilOgMedDato != (it.fraOgMed.minusMonths(1))) {
+                    return false
+                }
+
+            }
+            forrigeTilOgMedDato = it.tilOgMed
+        }
+
+    }
+    return true
+}
