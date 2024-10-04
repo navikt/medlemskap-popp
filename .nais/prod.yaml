@@ -48,6 +48,7 @@ spec:
           cluster: prod-gcp
     outbound:
       rules:
+        - application: medlemskap-oppslag
       external:
         - host: login.microsoftonline.com
   env:
