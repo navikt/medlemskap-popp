@@ -51,3 +51,7 @@ spec:
       external:
         - host: login.microsoftonline.com
   env:
+    - name: MEDL_OPPSLAG_BASE_URL
+      value: http://medlemskap-oppslag.medlemskap.svc.cluster.local
+    - name: MEDL_OPPSLAG_CLIENT_ID
+      value: 23600ac9-019c-445d-87a4-2df4996e6f63
